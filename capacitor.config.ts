@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli'
 
 export default <CapacitorConfig>{
-  appId: 'com.ormnicro.app',
+  appId: 'com.b-ewps.ormnicro.app',
   appName: 'ORMNicro',
   webDir: 'app/dist',
   bundledWebRuntime: true,
