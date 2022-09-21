@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Omnicro</string>
-    <string name="title_activity_main">Omnicro</string>
-    <string name="package_name">com.omnicro.app</string>
-    <string name="custom_url_scheme">com.omnicro.app</string>
+    <string name="app_name">ORMNicro</string>
+    <string name="title_activity_main">ORMNicro</string>
+    <string name="package_name">com.ormnicro.app</string>
+    <string name="custom_url_scheme">com.ormnicro.app</string>
 </resources>

@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.26.3",
+    "@capacitor/app": "^4.0.1",
     "@iconify-json/carbon": "^1.1.7",
     "@types/node": "^18.7.15",
     "@unocss/reset": "^0.45.15",

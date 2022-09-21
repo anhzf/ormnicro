@@ -2,6 +2,7 @@ lockfileVersion: 5.4
 
 specifiers:
   '@antfu/eslint-config': ^0.26.3
+  '@capacitor/app': ^4.0.1
   '@iconify-json/carbon': ^1.1.7
   '@types/node': ^18.7.15
   '@unocss/reset': ^0.45.15
@@ -31,6 +32,7 @@ dependencies:
 
 devDependencies:
   '@antfu/eslint-config': 0.26.3_yqf6kl63nyoq5megxukfnom5rm
+  '@capacitor/app': 4.0.1
   '@iconify-json/carbon': 1.1.7
   '@types/node': 18.7.15
   '@unocss/reset': 0.45.15
@@ -210,6 +212,12 @@ packages:
     dependencies:
       '@babel/helper-validator-identifier': 7.18.6
       to-fast-properties: 2.0.0
+
+  /@capacitor/app/4.0.1:
+    resolution: {integrity: sha512-frPft9TMJL70jWq5jmxwGSBddZVvsWxX5Agj2i19WJerk37aTgljB05HRr/YLg6mF1G/NIXmmFJZDY8MEgirDg==}
+    peerDependencies:
+      '@capacitor/core': ^4.0.0
+    dev: true
 
   /@esbuild/linux-loong64/0.15.7:
     resolution: {integrity: sha512-IKznSJOsVUuyt7cDzzSZyqBEcZe+7WlBqTVXiF1OXP/4Nm387ToaXZ0fyLwI1iBlI/bzpxVq411QE2/Bt2XWWw==}

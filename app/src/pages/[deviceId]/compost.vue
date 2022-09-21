@@ -142,7 +142,7 @@ const timeProgress = $computed(() => {
         </header>
 
         <main class="flex flex-col gap-4">
-          <section class="flex justify-between p-4 bg-teal-100 rounded-2xl">
+          <section class="flex justify-between items-center p-4 bg-teal-100 rounded-2xl">
             <h3 class="text-base text-slate-700 font-medium">
               Mode penyemprotan
             </h3>

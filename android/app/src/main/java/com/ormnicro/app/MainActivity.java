@@ -1,4 +1,4 @@
-package com.omnicro.app;
+package com.ormnicro.app;
 
 import com.getcapacitor.BridgeActivity;
 
