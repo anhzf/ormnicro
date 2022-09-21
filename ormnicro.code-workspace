@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"name": "$root",
+			"path": "."
+		},
+		{
+			"path": "./app"
+		},
+		{
+			"path": "./android"
+		}
+	],
+	"settings": {
+		"unocss.root": "app",
+	}
+}

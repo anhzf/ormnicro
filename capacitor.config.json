@@ -1,0 +1,6 @@
+{
+  "appId": "com.omnicro.app",
+  "appName": "Omnicro",
+  "webDir": "app/dist",
+  "bundledWebRuntime": false
+}
