@@ -7,8 +7,11 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    ArticleCard: typeof import('./src/components/ArticleCard.vue')['default']
     Footer: typeof import('./src/components/Footer.vue')['default']
+    ProgressBar: typeof import('./src/components/ProgressBar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    StatsHighlightCard: typeof import('./src/components/StatsHighlightCard.vue')['default']
   }
 }

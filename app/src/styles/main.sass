@@ -1,5 +1,44 @@
 html
-  @apply bg-slate-200 text-slate-500
+  @apply bg-slate-200 text-slate-500 font-sans
 
 #app
   @apply min-h-screen max-w-screen-sm mx-auto flex flex-col bg-green-50
+
+a, button
+  -webkit-tap-highlight-color: transparent
+  -webkit-touch-callout: none
+
+.btn
+  @apply text-base // scale
+  @apply flex justify-center items-center gap-2 px-1.5em py-0.75em rounded-1em shadow
+  @apply bg-green-500 text-white font-medium
+  &:hover
+    @apply bg-green-400
+  &:active
+    @apply bg-green-600 shadow-none
+
+  &--flat
+    @apply bg-green-50 text-green-700 shadow-none
+    &:hover
+      @apply bg-green-100
+    &:active
+      @apply bg-green-200
+
+  &--icon
+    @apply aspect-square p-0.5em rounded-full
+
+  &--dense
+    @apply px-0.5em py-0.25em rounded-0.5em
+
+  &--sm
+    @apply text-sm
+
+  &--slate
+    @apply text-slate-500
+    &:hover
+      @apply bg-slate-100
+    &:active
+      @apply bg-slate-200
+
+  &--slate:not(&--flat)
+    @apply bg-white text-slate-700
