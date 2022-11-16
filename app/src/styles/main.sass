@@ -1,31 +1,83 @@
+:root
+  --primary: theme('colors.green.500')
+  --primary-weak: theme('colors.green.300')
+  --primary-strong: theme('colors.green.700')
+  --primary-xstrong: theme('colors.green.900')
+  --primary-bg: theme('colors.green.50')
+  --primary-surface: theme('colors.green.500')
+  --primary-outline: theme('colors.green.DEFAULT')
+  --primary-bg-hover: theme('colors.green.100')
+  --primary-surface-hover: theme('colors.green.400')
+  --primary-bg-active: theme('colors.green.200')
+  --primary-surface-active: theme('colors.green.600')
+  --on-primary-bg: var(--primary-strong)
+  --on-primary-surface: theme('colors.white')
+  // Secondary
+  --secondary: theme('colors.teal.500')
+  --secondary-weak: theme('colors.teal.300')
+  --secondary-strong: theme('colors.teal.700')
+  --secondary-xstrong: theme('colors.teal.900')
+  --secondary-bg: theme('colors.teal.300')
+  --secondary-surface: theme('colors.teal.100')
+  --secondary-outline: theme('colors.teal.DEFAULT')
+  --secondary-bg-hover: theme('colors.teal.400')
+  --secondary-surface-hover: theme('colors.teal.200')
+  --secondary-bg-active: theme('colors.teal.500')
+  --secondary-surface-active: theme('colors.teal.300')
+  --on-secondary-bg: var(--secondary-strong)
+  --on-secondary-surface: var(--secondary-strong)
+  // BW stands for Black and White
+  --bw: theme('colors.slate.500')
+  --bw-weak: theme('colors.slate.300')
+  --bw-strong: theme('colors.slate.700')
+  --bw-xstrong: theme('colors.slate.900')
+  --bw-bg: theme('colors.white')
+  --bw-surface: var(--bw-bg)
+  --bw-outline: theme('colors.slate.DEFAULT')
+  --bw-bg-hover: theme('colors.slate.100')
+  --bw-surface-hover: var(--bw-bg-hover)
+  --bw-bg-active: theme('colors.slate.200')
+  --bw-surface-active: var(--bw-bg-active)
+  --on-bw-bg: var(--bw-strong)
+  --on-bw-surface: var(--on-bw-bg)
+
 html
   @apply bg-slate-200 text-slate-500 font-sans
 
 #app
-  @apply min-h-screen max-w-screen-sm mx-auto flex flex-col bg-green-50
+  @apply min-h-screen max-w-screen-sm mx-auto flex flex-col bg-$primary-bg
 
 a, button
   -webkit-tap-highlight-color: transparent
   -webkit-touch-callout: none
 
 .btn
+  $root: &
   @apply text-base // scale
-  @apply flex justify-center items-center gap-2 px-1.5em py-0.75em rounded-1em shadow
-  @apply bg-green-500 text-white font-medium
+  @apply flex justify-center items-center gap-2 px-1.5em py-0.75em rounded-1em outline-none shadow cursor-pointer select-none
+  @apply bg-$primary-surface text-$on-primary-surface font-medium
   &:hover
-    @apply bg-green-400
-  &:active
-    @apply bg-green-600 shadow-none
+    @apply bg-$primary-surface-hover
+  &:active,
+  &:focus
+    @apply bg-$primary-surface-active shadow-none ring-3 ring-offset ring-$primary-outline transition-shadow duration-100
+
+  &--unelevated
+    @apply shadow-none
 
   &--flat
-    @apply bg-green-50 text-green-700 shadow-none
+    @apply bg-transparent text-$on-primary-bg shadow-none
     &:hover
-      @apply bg-green-100
-    &:active
-      @apply bg-green-200
+      @apply bg-$primary-bg-hover
+    &:active,
+    &:focus
+      @apply bg-$primary-bg-active
 
   &--icon
     @apply aspect-square p-0.5em rounded-full
+
+  &--rounded
+    @apply rounded-full
 
   &--dense
     @apply px-0.5em py-0.25em rounded-0.5em
@@ -33,12 +85,35 @@ a, button
   &--sm
     @apply text-sm
 
-  &--slate
-    @apply text-slate-500
-    &:hover
-      @apply bg-slate-100
-    &:active
-      @apply bg-slate-200
+  &--with-icon,
+  &--with-icon-l
+    @apply pl-1em
 
-  &--slate:not(&--flat)
-    @apply bg-white text-slate-700
+  &--with-icon-r
+    @apply pr-1em
+
+  &--bw
+    @apply text-$on-bw-bg
+    &:hover
+      @apply bg-$bw-bg-hover
+    &:active
+      @apply bg-$bw-bg-active
+
+  &--bw:not(&--flat)
+    @apply bg-$bw-surface text-$on-bw-surface
+    &:hover
+      @apply bg-$bw-surface-hover
+    &:active
+      @apply bg-$bw-surface-active
+
+  &--secondary
+    @apply bg-$secondary-surface text-$on-secondary-surface
+    &:hover
+      @apply bg-$secondary-surface-hover
+    &:focus,
+    &:active
+      @apply bg-$secondary-surface-active ring-3 ring-offset ring-$secondary-outline
+
+  &
+    &__icon
+      @apply text-1.5em
