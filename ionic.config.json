@@ -1,0 +1,7 @@
+{
+  "name": "ormnicro",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "custom"
+}

@@ -23,7 +23,7 @@ onMounted(() => {
 <template>
   <div class="layout">
     <div class="grow flex flex-col overflow-y-scroll">
-      <nav class="flex items-center gap-4 px-6 py-5">
+      <nav class="flex justify-center items-center gap-4 px-6 py-5">
         <router-link to="/" class="btn btn--icon btn--flat">
           <div class="btn__icon i-material-symbols:arrow-back-ios-new" />
         </router-link>
@@ -34,10 +34,13 @@ onMounted(() => {
 
         <div class="grow" />
 
-        <div class="flex items-center gap-4">
+        <div class="flex justify-end items-center gap-4">
           <button class="btn btn--unelevated btn--secondary btn--with-icon-r group" @click="showDeviceSelector = true">
             <span>Perangkat 1</span>
             <div class="btn__icon i-material-symbols:expand-more group-focus:rotate-180 transition-transform" />
+          </button>
+          <button class="btn btn--error btn--outlined btn--icon">
+            <div class="btn__icon i-material-symbols:stop" />
           </button>
         </div>
       </nav>
@@ -192,14 +195,11 @@ onMounted(() => {
       @apply translate-y-1/4 opacity-0
 
 :deep(.stats)
-  @apply flex flex-col gap-4 py-2
+  @apply flex flex-col gap-4 px-6 py-4
 
   > section
     @apply flex flex-col
 
     .label
-      @apply flex items-center gap-1 mb-2
-
-      h3
-        @apply text-base text-$primary-strong font-medium
+      @apply text-base text-$bw-strong font-medium
 </style>
