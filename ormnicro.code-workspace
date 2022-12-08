@@ -14,7 +14,11 @@
 	"settings": {
 		"unocss.root": "app",
 		"conventionalCommits.scopes": [
-			"android"
+			"android",
+			"app"
+		],
+		"cSpell.words": [
+			"ormnicro"
 		],
 	}
 }

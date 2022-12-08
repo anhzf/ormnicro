@@ -1,4 +1,10 @@
 <script lang="ts" setup>
+const props = defineProps<{
+  deviceId: string
+}>()
+
+provide('deviceId', props.deviceId)
+
 const route = useRoute()
 const router = useRouter()
 let showDeviceSelector = $ref(false)

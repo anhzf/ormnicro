@@ -86,11 +86,11 @@ const articles = [
           <div class="i-material-symbols:compost menu__illustration" />
           <span class="menu__title">Monitoring</span>
         </router-link>
-        <router-link to="#" class="menu">
+        <router-link to="/bank" class="menu">
           <div class="i-material-symbols:account-balance menu__illustration" />
           <span class="menu__title">Bank Sampah</span>
         </router-link>
-        <router-link to="#" class="menu">
+        <router-link to="/shop" class="menu">
           <div class="i-material-symbols:store menu__illustration" />
           <span class="menu__title">Belanja</span>
         </router-link>
