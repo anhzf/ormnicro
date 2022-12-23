@@ -8,8 +8,8 @@ export default <CapacitorConfig>{
   android: {
     minWebViewVersion: 107,
   },
-  server: {
-    url: 'http://192.168.100.108:8100',
-    cleartext: true,
-  }
+  // server: {
+  //   url: 'http://192.168.100.108:8100',
+  //   cleartext: true,
+  // }
 }

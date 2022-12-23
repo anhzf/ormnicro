@@ -1,0 +1,7 @@
+{
+  "rules": {
+    "ormnicro_devices": {
+      ".read": true
+    }
+  }
+}
