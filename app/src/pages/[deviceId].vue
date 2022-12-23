@@ -1,29 +1,62 @@
 <script lang="ts" setup>
+import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import useUser from '~/composables/use-user'
+import { db } from '~/services/firebase'
+
 const props = defineProps<{
   deviceId: string
 }>()
 
-provide('deviceId', props.deviceId)
+const INVALID_DEVICE_ID_PATTERNS = Object.freeze(['<select-device>', /[^A-Za-z0-9\-\_]/])
+const isDeviceIdValid = (deviceId: string) => !INVALID_DEVICE_ID_PATTERNS.some(pattern => deviceId.search(pattern) !== -1)
+const checkDeviceAvailability = async (deviceId: string) => {
+  const snap = await getDoc(doc(db(), 'Devices', deviceId))
+  return !!snap.data()
+}
 
-const route = useRoute()
+const deviceId = computed(() => props.deviceId)
+
 const router = useRouter()
-let showDeviceSelector = $ref(false)
-let showDeviceAdder = $ref(false)
+const addDeviceFields = reactive({
+  label: '',
+  uid: '',
+})
+const showDeviceSelector = ref(false)
+const showDeviceAdder = ref(false)
+
+const { extended: userData, $ref: userDataRef } = useUser()
 
 /** @todo Check to server if current deviceId is available */
-const isDeviceAvailable = () => route.params.deviceId === '<select-device>'
+const isDeviceAvailable = asyncComputed(() => isDeviceIdValid(deviceId.value), false)
 
-const addDevice = () => {
-  showDeviceAdder = false
-  showDeviceSelector = false
+const addDevice = async () => {
+  if (await checkDeviceAvailability(addDeviceFields.uid)) {
+    await updateDoc(userDataRef.value, {
+      [`savedDevices.${addDeviceFields.uid.trim()}`]: { label: addDeviceFields.label },
+    })
+
+    showDeviceSelector.value = false
+    showDeviceAdder.value = false
+
+    router.replace({ name: 'deviceId-compost', params: { deviceId: addDeviceFields.uid } })
+  }
+  else {
+    window.alert('Perangkat tidak tersedia!')
+  }
 }
 
 onMounted(() => {
-  if (isDeviceAvailable())
-    showDeviceSelector = true
-  else
-    router.replace({ name: 'deviceId-compost' })
+  showDeviceSelector.value = !isDeviceIdValid(deviceId.value)
 })
+
+watch(isDeviceAvailable, () => {
+  if (isDeviceAvailable.value)
+    router.replace({ name: 'deviceId-compost' })
+  else
+    showDeviceSelector.value = true
+})
+
+provide('deviceId', deviceId)
 </script>
 
 <template>
@@ -57,12 +90,14 @@ onMounted(() => {
     <nav class="bottom-navigation">
       <router-link
         :to="{ name: 'deviceId-compost' }"
+        replace
         class="btn btn--flat btn--rounded item"
       >
         Kompos
       </router-link>
       <router-link
         :to="{ name: 'deviceId-magot' }"
+        replace
         class="btn btn--flat btn--rounded item"
       >
         Magot
@@ -70,6 +105,7 @@ onMounted(() => {
     </nav>
   </div>
 
+  <!-- Device Selector -->
   <teleport to="body">
     <transition>
       <div v-show="showDeviceSelector" class="modal">
@@ -91,11 +127,11 @@ onMounted(() => {
           </label>
 
           <ul class="self-center h-96 max-h-full w-[calc(100%+1rem)] px-2 py-1 flex flex-col gap-4 overflow-y-scroll">
-            <li v-for="i in 7" :key="i">
-              <router-link :to="{ name: 'deviceId-compost', params: { deviceId: 'qwf34y90' } }" class="btn btn--flat flex items-center justify-start gap-4 px-4 py-2" @click="showDeviceSelector = false">
+            <li v-for="(el, uid) in userData.savedDevices" :key="uid">
+              <router-link :to="{ name: 'deviceId-compost', params: { deviceId: uid.trim() } }" class="btn btn--flat flex items-center justify-start gap-4 px-4 py-2" @click="showDeviceSelector = false">
                 <div class="flex flex-col">
-                  <span class="text-$primary-strong font-semibold">Perangkat 1</span>
-                  <span class="text-xs text-$bw font-medium">qwf34y90</span>
+                  <span class="text-$primary-strong font-semibold">{{ el.label }}</span>
+                  <span class="text-xs text-$bw font-medium">{{ uid }}</span>
                 </div>
               </router-link>
             </li>
@@ -108,7 +144,7 @@ onMounted(() => {
 
             <div class="grow" />
 
-            <button class="btn btn--flat btn--rounded" @click="showDeviceSelector = false">
+            <button v-show="isDeviceAvailable" class="btn btn--flat btn--rounded" @click="showDeviceSelector = false">
               Kembali
             </button>
           </div>
@@ -117,6 +153,7 @@ onMounted(() => {
     </transition>
   </teleport>
 
+  <!-- Device Adder -->
   <teleport to="body">
     <transition>
       <div v-show="showDeviceAdder" class="modal">
@@ -132,9 +169,20 @@ onMounted(() => {
             <label class="form-control flex items-center gap-4 bg-green-100 hover:bg-green-200 px-3 py-4 rounded-t border-b-2 border-inset border-$primary-outline focus-within:border-$primary transition">
               <div class="i-material-symbols:tag-rounded text-2xl text-$primary" />
               <input
+                v-model="addDeviceFields.uid"
                 type="text"
                 class="form-control__input w-full bg-transparent text-$bw valid:text-$bw-xstrong outline-none"
                 placeholder="Masukkan ID perangkat (cth: SewKjTcu)"
+              >
+            </label>
+            <label class="form-control flex items-center gap-4 bg-green-100 hover:bg-green-200 px-3 py-4 rounded-t border-b-2 border-inset border-$primary-outline focus-within:border-$primary transition">
+              <div class="i-material-symbols:label text-2xl text-$primary" />
+              <input
+                v-model="addDeviceFields.label"
+                type="text"
+                :disabled="!addDeviceFields.uid"
+                class="form-control__input w-full bg-transparent text-$bw valid:text-$bw-xstrong outline-none"
+                placeholder="Beri nama untuk perangkat (cth: Mesin di Rumah)"
               >
             </label>
           </div>

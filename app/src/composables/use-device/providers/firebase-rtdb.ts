@@ -1,20 +1,26 @@
-import { useRTDB } from '@vueuse/firebase'
-import { getDatabase, ref } from 'firebase/database'
+import { useFirestore, useRTDB } from '@vueuse/firebase'
+import { ref as dbRef } from 'firebase/database'
+import type { DocumentReference, Timestamp } from 'firebase/firestore'
+import { doc } from 'firebase/firestore'
 import type { NozzleMode, UseCompostParameters } from '../types'
-import firebase from '~/services/firebase'
+import { db, rtdb } from '~/services/firebase'
 
-interface Source {
-  /** In miliseconds */
-  startAt: number
+interface _Session {
+  type: 'compost' | 'maggot'
+  startAt: Timestamp
+  stoppedAt: Timestamp | null
+  nozzleMode: number
+  capacity: number
+}
+
+interface _CompostParameters {
   isOnline: boolean
   isLightOn: boolean
   humidity: number
   temperature: number
-  /** 0: auto, 1: manual */
-  nozzleMode: number
   pH: number
   waterLevel: number
-  capacity: number
+  activeSessionId: string
 }
 
 const fromSource = {
@@ -28,15 +34,27 @@ const fromSource = {
   },
 }
 
-const db = getDatabase(firebase)
+export const useCompostParameters: UseCompostParameters = (deviceId) => {
+  const isDeviceDataLoaded = ref(false)
+  const deviceRef = dbRef(rtdb(), `/Monitoring/Compost/${deviceId}`)
+  const deviceData = useRTDB<_CompostParameters>(deviceRef)
+  const sessRef = computed(() => deviceData.value
+    && doc(db(), 'Devices', deviceId, 'Sessions', deviceData.value.activeSessionId) as DocumentReference<_Session>)
+  const sessData = useFirestore(sessRef)
 
-export default <UseCompostParameters>((deviceId) => {
-  const dbRef = ref(db, `/ormnicro_devices/${deviceId}`)
-  const data = useRTDB<Source>(dbRef)
+  watchOnce(deviceData, () => {
+    isDeviceDataLoaded.value = true
+  })
 
-  return computed(() => data.value && ({
-    ...data.value,
-    startAt: new Date(data.value.startAt),
-    nozzleMode: fromSource.nozzleMode(data.value.nozzleMode),
+  return computed(() => ({
+    startAt: sessData.value?.startAt.toDate() ?? new Date(),
+    capacity: sessData.value?.capacity ?? 0,
+    isOnline: deviceData.value.isOnline,
+    isLightOn: deviceData.value.isLightOn,
+    humidity: deviceData.value.humidity,
+    temperature: deviceData.value.temperature,
+    nozzleMode: fromSource.nozzleMode(sessData.value?.nozzleMode),
+    pH: deviceData.value.pH,
+    waterLevel: deviceData.value.waterLevel,
   }))
-})
+}

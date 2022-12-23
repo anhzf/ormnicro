@@ -1,14 +1,43 @@
-import type { FirebaseOptions } from 'firebase/app'
 import { initializeApp } from 'firebase/app'
+import { connectAuthEmulator, getAuth } from 'firebase/auth'
+import { connectDatabaseEmulator, getDatabase } from 'firebase/database'
+import { connectFirestoreEmulator, getFirestore } from 'firebase/firestore'
+import config from '~/config'
+import { singleton } from '~/utils/function'
 
-const config: FirebaseOptions = {
-  apiKey: 'AIzaSyDj7IyfiuQNd_uyk_SXXtqQTJKyh6FRBj8',
-  authDomain: 'learning-project-321200.firebaseapp.com',
-  databaseURL: 'https://learning-project-321200-default-rtdb.firebaseio.com',
-  projectId: 'learning-project-321200',
-  storageBucket: 'learning-project-321200.appspot.com',
-  messagingSenderId: '729738339697',
-  appId: '1:729738339697:web:3c24716ec85d42785fc2d0',
+const app = initializeApp(config.firebase.config)
+
+const auth = singleton(() => {
+  const instance = getAuth(app)
+
+  if (config.firebase.useEmulator)
+    connectAuthEmulator(instance, `http://localhost:${config.firebase.emulatorPort.auth}`)
+
+  return instance
+})
+
+const rtdb = singleton(() => {
+  const instance = getDatabase(app)
+
+  if (config.firebase.useEmulator)
+    connectDatabaseEmulator(instance, 'localhost', config.firebase.emulatorPort.database)
+
+  return instance
+})
+
+const db = singleton(() => {
+  const instance = getFirestore(app)
+
+  if (config.firebase.useEmulator)
+    connectFirestoreEmulator(instance, 'localhost', config.firebase.emulatorPort.firestore)
+
+  return instance
+})
+
+export {
+  app as default,
+  auth,
+  rtdb,
+  db,
 }
 
-export default initializeApp(config)

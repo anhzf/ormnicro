@@ -1,6 +1,6 @@
 import type { UseCompostParameters } from '../types'
 
-export default <UseCompostParameters>(() => ref({
+export const useCompostParameters = <UseCompostParameters>(() => ref({
   startAt: new Date(2022, 8, 15),
   isOnline: true,
   isLightOn: true,

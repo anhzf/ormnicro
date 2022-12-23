@@ -1,24 +1,81 @@
 <script lang="ts" setup>
-const articles = [
+import { useAuth } from '@vueuse/firebase'
+import { auth } from '~/services/firebase'
+
+interface BannerInfo {
+  image: string
+  action: {
+    label: string
+    to?: string
+    onClick?(): void
+    href?: string
+  }
+}
+
+interface Notification {
+  id: string
+  message: string
+  icon?: string
+  type?: 'info' | 'success' | 'warning' | 'error'
+  action: {
+    label: string
+    to?: string
+    href?: string
+    onClick?(): void
+  }
+}
+
+const { user } = useAuth(auth())
+
+const notifications: Notification[] = [
   {
     id: '1',
-    title: 'Sampah Organik jadi Kompos, Gimana Sampah Anorganik Saya?',
-    imgSrc: '/content/DALL·E 2022-10-18 18.54.49 - plastic waste on a pile of organic waste.png',
-    url: '#',
-  },
-  {
-    id: '2',
-    title: 'Menangkan Hadiah Mobil selama Penukaran Poin periode September - Desember 2022',
-    imgSrc: '/content/article_prize-info-sept-des-2022.png',
-    url: '#',
-  },
-  {
-    id: '3',
-    title: 'Top Global Penukar Sampah periode Juni - Agustus 2022',
-    imgSrc: '/content/article_top-global-june-aug-2022.png',
-    url: '#',
+    message: 'Aplikasi ini masih dalam tahap pengembangan, Silakan laporkan bug atau saran ke kadhl@ormnicro.id',
+    icon: 'i-material-symbols:info',
+    type: 'info',
+    action: {
+      label: 'Laporkan',
+      href: 'mailto:kadhl@ormnicro.id',
+    },
   },
 ]
+
+const banner: BannerInfo = {
+  image: '/content/home-info-banner.png',
+  action: {
+    label: 'Baca artikel →',
+    onClick: () => window.alert('Artikel tidak tersedia untuk saat ini.'),
+  },
+}
+
+const articles = [
+  // {
+  //   id: '1',
+  //   title: 'Sampah Organik jadi Kompos, Gimana Sampah Anorganik Saya?',
+  //   imgSrc: '/content/DALL·E 2022-10-18 18.54.49 - plastic waste on a pile of organic waste.png',
+  //   url: '#',
+  // },
+  // {
+  //   id: '2',
+  //   title: 'Menangkan Hadiah Mobil selama Penukaran Poin periode September - Desember 2022',
+  //   imgSrc: '/content/article_prize-info-sept-des-2022.png',
+  //   url: '#',
+  // },
+  // {
+  //   id: '3',
+  //   title: 'Top Global Penukar Sampah periode Juni - Agustus 2022',
+  //   imgSrc: '/content/article_top-global-june-aug-2022.png',
+  //   url: '#',
+  // },
+]
+
+const inferActionComponentType = (action: Notification['action']) => {
+  if (action.to)
+    return 'router-link'
+  if (action.href)
+    return 'a'
+  return 'button'
+}
 </script>
 
 <template>
@@ -29,7 +86,7 @@ const articles = [
         <div class="i-material-symbols:account-circle w-10 h-10 text-green-700" />
         <div class="flex flex-col">
           <div class="text-slate-700 font-medium">
-            Agus Riyanto
+            {{ user?.displayName }}
           </div>
           <div class="flex gap-1">
             <span class="text-green-900 font-semibold">1908</span>
@@ -48,30 +105,15 @@ const articles = [
     </div>
 
     <!-- Notifications -->
-    <section class="flex flex-col gap-2 px-section py-2">
-      <div class="notification-banner bg-green-500">
-        <div class="notification-banner__message">
-          <div class="i-material-symbols:info notification-banner__icon" />
-          <span>2 hari lagi kompos kamu jadi!</span>
-        </div>
-        <div class="notification-banner__actions">
-          <button class="btn btn--sm btn--bw">
-            Pantau
-          </button>
-        </div>
-      </div>
-
-      <div class="notification-banner bg-amber-500">
-        <div class="notification-banner__message">
-          <div class="i-material-symbols:local-shipping notification-banner__icon" />
-          <span>Penjemput sampah kamu akan tiba 3 menit lagi!</span>
-        </div>
-        <div class="notification-banner__actions">
-          <button class="btn btn--sm btn--bw">
-            Lacak
-          </button>
-        </div>
-      </div>
+    <section v-if="notifications.length > 0" class="flex flex-col gap-2 px-section py-2">
+      <NotificationBanner
+        v-for="notification in notifications"
+        :key="notification.id"
+        :message="notification.message"
+        :icon="notification.icon"
+        :type="notification.type"
+        :action="notification.action"
+      />
     </section>
 
     <!-- Main Menus -->
@@ -100,11 +142,11 @@ const articles = [
     <!-- Banner Info -->
     <section class="flex flex-col gap-2 px-section py-4">
       <article class="relative block overflow-hidden w-full aspect-2.1 rounded-2xl shadow">
-        <img src="/content/home-info-banner.png" alt="Info Banner" class="w-full h-full object-cover">
+        <img :src="banner.image" alt="Info Banner" class="w-full h-full object-cover">
         <div class="absolute inset-y-8 left-4 flex flex-col justify-end">
-          <router-link to="#" class="btn btn--sm btn--bw">
-            Baca artikel →
-          </router-link>
+          <component :is="inferActionComponentType(banner.action)" class="btn btn--sm btn--bw" v-bind="banner.action">
+            {{ banner.action.label }}
+          </component>
         </div>
       </article>
     </section>
@@ -119,7 +161,7 @@ const articles = [
         </button>
       </div>
 
-      <ul class="flex flex-col gap-4">
+      <ul v-if="articles.length > 0" class="flex flex-col gap-4">
         <li v-for="el in articles" :key="el.id">
           <ArticleCard :title="el.title" :img-src="el.imgSrc" :url="el.url" />
         </li>
@@ -130,23 +172,17 @@ const articles = [
           </p>
         </div>
       </ul>
+
+      <div class="p-4">
+        <p class="text-slate-500 text-center font-medium">
+          Tidak ada artikel yang ditemukan.
+        </p>
+      </div>
     </section>
   </div>
 </template>
 
 <style lang="sass" scoped>
-.notification-banner
-  @apply flex items-center gap-4 px-3 py-2 rounded-xl
-
-  &__message
-    @apply grow text-white font-semibold flex items-center gap-2
-
-  &__icon
-    @apply w-6 h-6 text-white
-
-  &__actions
-    @apply flex items-center gap-1
-
 section > .headline
   @apply text-lg font-semibold text-slate-700
 

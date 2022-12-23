@@ -1,16 +1,13 @@
 <script lang="ts" setup>
+import type { ComputedRef } from 'vue'
 import useCompostParameters from '~/composables/use-device'
 
 const MAX_CAPACITY = 1500
 const MAX_DAYS = 21
 
-const deviceId = inject<string>('deviceId')
+const deviceId = inject<ComputedRef<string>>('deviceId')
 
-const stats = useCompostParameters(deviceId)
-
-onMounted(() => {
-  console.log(isRef(deviceId), isReactive(deviceId), isReadonly(deviceId))
-})
+const stats = useCompostParameters(deviceId.value)
 </script>
 
 <template>
