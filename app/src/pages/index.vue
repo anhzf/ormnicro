@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useAuth } from '@vueuse/firebase'
+import config from '~/config'
 import { auth } from '~/services/firebase'
 
 interface BannerInfo {
@@ -12,6 +13,13 @@ interface BannerInfo {
   }
 }
 
+interface Article {
+  id: string
+  title: string
+  imgSrc: string
+  url: string
+}
+
 interface Notification {
   id: string
   message: string
@@ -21,6 +29,7 @@ interface Notification {
     label: string
     to?: string
     href?: string
+    target?: string
     onClick?(): void
   }
 }
@@ -30,12 +39,13 @@ const { user } = useAuth(auth())
 const notifications: Notification[] = [
   {
     id: '1',
-    message: 'Aplikasi ini masih dalam tahap pengembangan, Silakan laporkan bug atau saran ke kadhl@ormnicro.id',
+    message: `Aplikasi ini masih dalam tahap pengembangan, Silakan laporkan bug atau saran ke ${config.supportEmail}`,
     icon: 'i-material-symbols:info',
     type: 'info',
     action: {
       label: 'Laporkan',
-      href: 'mailto:kadhl@ormnicro.id',
+      href: `mailto:${config.supportEmail}`,
+      target: '_blank',
     },
   },
 ]
@@ -48,7 +58,7 @@ const banner: BannerInfo = {
   },
 }
 
-const articles = [
+const articles: Article[] = [
   // {
   //   id: '1',
   //   title: 'Sampah Organik jadi Kompos, Gimana Sampah Anorganik Saya?',

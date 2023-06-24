@@ -12,4 +12,5 @@ export default Object.freeze({
       storage: firebaseJson.emulators.storage.port,
     },
   },
+  supportEmail: 'kadhl@ormnicro.id',
 })

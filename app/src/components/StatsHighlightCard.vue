@@ -7,14 +7,17 @@ interface Parameter {
   iconClass?: string
 }
 
-const props = withDefaults(defineProps<{
-  deviceName: string
+interface Props {
+  deviceLabel: string
   sessionStartAt: Date
   isDeviceOnline?: boolean
   isLightOn?: boolean
   maxDays: number
   parameters?: Parameter[]
-}>(), {
+  loading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
   parameters: () => [],
 })
 
@@ -37,7 +40,11 @@ const timeProgress = $computed(() => {
 
 <template>
   <header class="flex items-center bg-$primary-surface p-6 rounded-2xl shadow-md">
-    <section class="flex flex-col">
+    <section v-if="loading">
+      <span class="text-4xl text-$on-primary-surface font-semibold">Loading data...</span>
+    </section>
+
+    <section v-else class="flex flex-col">
       <div>
         <span class="text-4xl text-$on-primary-surface font-semibold">{{ timeProgress.days }} hari</span>
         <span class="text-base text-$primary-weak font-semibold">/ {{ maxDays }}h</span>
@@ -52,7 +59,11 @@ const timeProgress = $computed(() => {
     <div class="grow" />
 
     <div class="flex flex-col gap-4 justify-end">
-      <section v-for="param in parameters" :key="param.label" class="flex justify-end gap-2">
+      <section v-if="loading">
+        <span class="text-xl text-$on-primary-surface text-right font-bold">Loading data...</span>
+      </section>
+
+      <section v-for="param in parameters" v-else :key="param.label" class="flex justify-end gap-2">
         <div class="flex flex-col">
           <h2 class="flex justify-end items-center gap-1">
             <div class=":uno: text-lg text-teal-300" :class="[param.icon, param.iconClass]" />

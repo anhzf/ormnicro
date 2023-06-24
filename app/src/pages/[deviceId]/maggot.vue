@@ -7,11 +7,10 @@ interface Emits {
 
 defineEmits<Emits>()
 
-const MAX_CAPACITY = 1500
-const MAX_DAYS = 21
+const MAX_DAYS = 30
 
 const device = useDevice.current()
-const stats = useDevice.compostParameters(device.value.id)
+const stats = useDevice.maggotParameters(device.value.id)
 </script>
 
 <template>
@@ -30,7 +29,6 @@ const stats = useDevice.compostParameters(device.value.id)
       <section class="flex flex-col gap-2 p-4">
         <stats-highlight-card
           device-label="Perangkat 1"
-          :loading="!stats._isReady"
           :session-start-at="stats.startAt"
           :is-device-online="stats.isOnline"
           :is-light-on="stats.isLightOn"
@@ -77,21 +75,18 @@ const stats = useDevice.compostParameters(device.value.id)
           </section>
         </div>
 
-        <!-- Stats details -->
         <div class="stats">
           <section>
             <div class="flex flex-col gap-2">
               <h3 class="label">
-                Skala pH
+                Lumix
               </h3>
-              <progress-bar :value="stats.pH / 14" :bar="14" bar-class="bg-teal-700" />
+              <progress-bar :value="stats.lumix / 14" :bar="10" bar-class="bg-yellow-300" />
             </div>
             <div class="flex text-$bw-strong">
               <span class="w-2ch">1</span>
               <div class="grow" />
-              <span class="w-2ch">7</span>
-              <div class="grow" />
-              <span class="w-2ch">14</span>
+              <span class="w-2ch">10</span>
             </div>
           </section>
 
@@ -100,7 +95,7 @@ const stats = useDevice.compostParameters(device.value.id)
               <h3 class="label">
                 Tingkatan Air
               </h3>
-              <progress-bar :value="stats.waterLevel" :bar="4" bar-class="bg-yellow-500" />
+              <progress-bar :value="stats.waterLevel" :bar="4" bar-class="bg-blue-300" />
             </div>
             <div class="flex text-$bw-strong">
               <span class="w-4ch">0%</span>
@@ -108,24 +103,8 @@ const stats = useDevice.compostParameters(device.value.id)
               <span class="w-4ch">100%</span>
             </div>
           </section>
-
-          <section>
-            <div class="flex flex-col gap-2">
-              <h3 class="label">
-                Kapasitas penampungan
-              </h3>
-              <progress-bar :value="stats.capacity / MAX_CAPACITY" bar-class="bg-green-500" />
-            </div>
-            <div class="flex text-$bw-strong">
-              <span>{{ stats.capacity }}/{{ MAX_CAPACITY }} Liter</span>
-            </div>
-          </section>
         </div>
       </div>
     </template>
-
-    <p v-else class="text-center">
-      Loading data...
-    </p>
   </main>
 </template>

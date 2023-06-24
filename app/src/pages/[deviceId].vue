@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import useDevice from '~/composables/use-device'
 import useUser from '~/composables/use-user'
 import { db } from '~/services/firebase'
+import type { MonitoringType } from '~/composables/use-device/types'
 
 const props = defineProps<{
   deviceId: string
@@ -11,14 +13,31 @@ const INVALID_DEVICE_ID_PATTERNS = Object.freeze(['<select-device>', /[^A-Za-z0-
 const isDeviceIdValid = (deviceId: string) => !INVALID_DEVICE_ID_PATTERNS.some(pattern => deviceId.search(pattern) !== -1)
 const checkDeviceAvailability = async (deviceId: string) => {
   const snap = await getDoc(doc(db(), 'Devices', deviceId))
-  return !!snap.data()
+  return snap.exists()
 }
 
 const deviceId = computed(() => props.deviceId)
+const device = useDevice.current()
 
+const route = useRoute()
 const router = useRouter()
+
+const monitoringType = computed<MonitoringType>(() => {
+  switch (route.name) {
+    case 'deviceId-compost':
+      return 'compost'
+
+    case 'deviceId-maggot':
+      return 'maggot'
+
+    default:
+      router.push({ name: 'deviceId' })
+      throw new Error('Invalid arguments!')
+  }
+})
+
 const addDeviceFields = reactive({
-  label: '',
+  name: '',
   uid: '',
 })
 const showDeviceSelector = ref(false)
@@ -27,13 +46,15 @@ const showDeviceAdder = ref(false)
 const { extended: userData, $ref: userDataRef } = useUser()
 
 /** @todo Check to server if current deviceId is available */
-const isDeviceAvailable = asyncComputed(() => isDeviceIdValid(deviceId.value), false)
+const isDeviceAvailable = asyncComputed(() => isDeviceIdValid(deviceId.value) && checkDeviceAvailability(deviceId.value), false)
 
 const addDevice = async () => {
   if (await checkDeviceAvailability(addDeviceFields.uid)) {
-    await updateDoc(userDataRef.value, {
-      [`savedDevices.${addDeviceFields.uid.trim()}`]: { label: addDeviceFields.label },
-    })
+    await updateDoc(
+      userDataRef.value,
+      `savedDevices.${addDeviceFields.uid.trim()}.name`,
+      addDeviceFields.name.trim(),
+    )
 
     showDeviceSelector.value = false
     showDeviceAdder.value = false
@@ -42,6 +63,48 @@ const addDevice = async () => {
   }
   else {
     window.alert('Perangkat tidak tersedia!')
+  }
+}
+
+const stopMonitoring = async () => {
+  if (window.confirm('Apakah Anda yakin ingin berhenti memantau perangkat ini?')) {
+    try {
+      switch (monitoringType.value) {
+        case 'compost':
+          await useDevice.stopCompostMonitoring(deviceId.value)
+          break
+        case 'maggot':
+          await useDevice.stopMaggotMonitoring(deviceId.value)
+          break
+
+        default:
+          throw new Error('Invalid arguments!')
+      }
+    }
+    catch (err) {
+      window.alert(String(err))
+    }
+  }
+}
+
+const startMonitoring = async () => {
+  if (window.confirm('Apakah Anda yakin ingin memulai sesi pemantauan perangkat ini?')) {
+    try {
+      switch (monitoringType.value) {
+        case 'compost':
+          await useDevice.startCompostMonitoring(deviceId.value)
+          break
+        case 'maggot':
+          await useDevice.startMaggotMonitoring(deviceId.value)
+          break
+
+        default:
+          throw new Error('Invalid arguments!')
+      }
+    }
+    catch (err) {
+      window.alert(String(err))
+    }
   }
 }
 
@@ -55,8 +118,6 @@ watch(isDeviceAvailable, () => {
   else
     showDeviceSelector.value = true
 })
-
-provide('deviceId', deviceId)
 </script>
 
 <template>
@@ -75,16 +136,22 @@ provide('deviceId', deviceId)
 
         <div class="flex justify-end items-center gap-4">
           <button class="btn btn--unelevated btn--secondary btn--with-icon-r group" @click="showDeviceSelector = true">
-            <span>Perangkat 1</span>
+            <span v-if="device.fromUser?.name">{{ device.fromUser?.name }}</span>
+            <pre v-else>{{ `id:${deviceId}` }}</pre>
             <div class="btn__icon i-material-symbols:expand-more group-focus:rotate-180 transition-transform" />
           </button>
-          <button class="btn btn--error btn--outlined btn--icon">
-            <div class="btn__icon i-material-symbols:stop" />
-          </button>
+          <template v-if="isDeviceAvailable">
+            <button v-if="device.activeSessions[monitoringType]" class="btn btn--error btn--outlined btn--icon" @click="stopMonitoring">
+              <div class="btn__icon i-material-symbols:stop" />
+            </button>
+            <button v-else class="btn btn--error btn--outlined btn--icon" @click="startMonitoring">
+              <div class="btn__icon i-material-symbols:play-arrow" />
+            </button>
+          </template>
         </div>
       </nav>
 
-      <router-view />
+      <router-view @request-monitoring="startMonitoring" />
     </div>
 
     <nav class="bottom-navigation">
@@ -96,7 +163,7 @@ provide('deviceId', deviceId)
         Kompos
       </router-link>
       <router-link
-        :to="{ name: 'deviceId-magot' }"
+        :to="{ name: 'deviceId-maggot' }"
         replace
         class="btn btn--flat btn--rounded item"
       >
@@ -128,9 +195,9 @@ provide('deviceId', deviceId)
 
           <ul class="self-center h-96 max-h-full w-[calc(100%+1rem)] px-2 py-1 flex flex-col gap-4 overflow-y-scroll">
             <li v-for="(el, uid) in userData.savedDevices" :key="uid">
-              <router-link :to="{ name: 'deviceId-compost', params: { deviceId: uid.trim() } }" class="btn btn--flat flex items-center justify-start gap-4 px-4 py-2" @click="showDeviceSelector = false">
+              <router-link :to="{ name: 'deviceId-compost', params: { deviceId: uid } }" class="btn btn--flat flex items-center justify-start gap-4 px-4 py-2" @click="showDeviceSelector = false">
                 <div class="flex flex-col">
-                  <span class="text-$primary-strong font-semibold">{{ el.label }}</span>
+                  <span class="text-$primary-strong font-semibold">{{ el.name }}</span>
                   <span class="text-xs text-$bw font-medium">{{ uid }}</span>
                 </div>
               </router-link>
@@ -178,7 +245,7 @@ provide('deviceId', deviceId)
             <label class="form-control flex items-center gap-4 bg-green-100 hover:bg-green-200 px-3 py-4 rounded-t border-b-2 border-inset border-$primary-outline focus-within:border-$primary transition">
               <div class="i-material-symbols:label text-2xl text-$primary" />
               <input
-                v-model="addDeviceFields.label"
+                v-model="addDeviceFields.name"
                 type="text"
                 :disabled="!addDeviceFields.uid"
                 class="form-control__input w-full bg-transparent text-$bw valid:text-$bw-xstrong outline-none"

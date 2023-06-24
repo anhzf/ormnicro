@@ -1,8 +1,8 @@
 import provider from './providers/firebase-rtdb'
-import type { UseCompostParameters } from './types'
+import type { UseDevice } from './types'
 
-const useCompostParameters: UseCompostParameters = provider
+const useDevice: UseDevice = provider
 
-export default useCompostParameters
+export default useDevice
 export * as COMPOST_PARAMETERS from './constants'
 export * from './types'
