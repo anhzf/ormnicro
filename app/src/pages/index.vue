@@ -101,7 +101,7 @@ const onSignOutClick = () => {
         <div class="i-material-symbols:account-circle w-10 h-10 text-green-700" />
         <div class="flex flex-col">
           <div class="text-slate-700 font-medium">
-            {{ user?.displayName }}
+            {{ user?.displayName || user?.email }}
           </div>
           <div class="flex gap-1">
             <span class="text-green-900 font-semibold">NaN</span>

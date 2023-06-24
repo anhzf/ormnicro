@@ -3,7 +3,7 @@ interface Props {
   message: string
   icon?: string
   type?: 'info' | 'success' | 'warning' | 'error'
-  action: {
+  action?: {
     label: string
     onClick?(): void
     to?: string
@@ -17,9 +17,9 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const actionComponent = computed(() => {
-  if (props.action.to)
+  if (props.action?.to)
     return 'router-link'
-  if (props.action.href)
+  if (props.action?.href)
     return 'a'
   return 'button'
 })
@@ -44,7 +44,7 @@ const color = computed(() => {
       <div class="icon" :class="icon" />
       <span>{{ message }}</span>
     </div>
-    <div class="actions">
+    <div v-if="action" class="actions">
       <component :is="actionComponent" class="btn btn--sm btn--bw" v-bind="action">
         {{ action.label }}
       </component>

@@ -1,13 +1,6 @@
 import { useAuth } from '@vueuse/firebase'
-import { getRedirectResult } from 'firebase/auth'
 import type { NavigationGuardWithThis } from 'vue-router'
 import { auth } from '~/services/firebase'
-
-const prepareAuth = async () => {
-  const { user } = useAuth(auth())
-  const authRedirectResult = await getRedirectResult(auth())
-  user.value = authRedirectResult?.user
-}
 
 const waitForAuth = () => new Promise<void>((resolve) => {
   const { isAuthenticated } = useAuth(auth())
@@ -17,7 +10,7 @@ const waitForAuth = () => new Promise<void>((resolve) => {
 })
 
 const authGuard: NavigationGuardWithThis<never> = async (to) => {
-  await prepareAuth()
+  // await prepareAuth()
   await waitForAuth()
 
   const { isAuthenticated } = useAuth(auth())
