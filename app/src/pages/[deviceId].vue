@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { doc, getDoc, updateDoc } from 'firebase/firestore'
+import { doc, getDoc, setDoc } from 'firebase/firestore'
 import useDevice from '~/composables/use-device'
+import type { MonitoringType } from '~/composables/use-device/types'
 import useUser from '~/composables/use-user'
 import { db } from '~/services/firebase'
-import type { MonitoringType } from '~/composables/use-device/types'
 
 const props = defineProps<{
   deviceId: string
@@ -50,10 +50,16 @@ const isDeviceAvailable = asyncComputed(() => isDeviceIdValid(deviceId.value) &&
 
 const addDevice = async () => {
   if (await checkDeviceAvailability(addDeviceFields.uid)) {
-    await updateDoc(
+    await setDoc(
       userDataRef.value,
-      `savedDevices.${addDeviceFields.uid.trim()}.name`,
-      addDeviceFields.name.trim(),
+      {
+        savedDevices: {
+          [addDeviceFields.uid.trim()]: {
+            name: addDeviceFields.name.trim(),
+          },
+        },
+      },
+      { merge: true },
     )
 
     showDeviceSelector.value = false
@@ -141,7 +147,7 @@ watch(isDeviceAvailable, () => {
             <div class="btn__icon i-material-symbols:expand-more group-focus:rotate-180 transition-transform" />
           </button>
           <template v-if="isDeviceAvailable">
-            <button v-if="device.activeSessions[monitoringType]" class="btn btn--error btn--outlined btn--icon" @click="stopMonitoring">
+            <button v-if="device.activeSessions?.[monitoringType]" class="btn btn--error btn--outlined btn--icon" @click="stopMonitoring">
               <div class="btn__icon i-material-symbols:stop" />
             </button>
             <button v-else class="btn btn--error btn--outlined btn--icon" @click="startMonitoring">
@@ -194,7 +200,7 @@ watch(isDeviceAvailable, () => {
           </label>
 
           <ul class="self-center h-96 max-h-full w-[calc(100%+1rem)] px-2 py-1 flex flex-col gap-4 overflow-y-scroll">
-            <li v-for="(el, uid) in userData.savedDevices" :key="uid">
+            <li v-for="(el, uid) in (userData?.savedDevices || {})" :key="uid">
               <router-link :to="{ name: 'deviceId-compost', params: { deviceId: uid } }" class="btn btn--flat flex items-center justify-start gap-4 px-4 py-2" @click="showDeviceSelector = false">
                 <div class="flex flex-col">
                   <span class="text-$primary-strong font-semibold">{{ el.name }}</span>

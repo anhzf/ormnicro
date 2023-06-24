@@ -17,7 +17,7 @@ const useUser = () => {
   const docRef = computed(() => doc(db(), 'Users', user.value.uid) as DocumentReference<UserExtendedData>)
   const extendedData = useFirestore(docRef, {
     savedDevices: {},
-  }, { autoDispose: false })
+  })
 
   return {
     user,

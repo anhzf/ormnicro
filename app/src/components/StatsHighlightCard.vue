@@ -8,7 +8,6 @@ interface Parameter {
 }
 
 interface Props {
-  deviceLabel: string
   sessionStartAt: Date
   isDeviceOnline?: boolean
   isLightOn?: boolean

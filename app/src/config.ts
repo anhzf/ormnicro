@@ -3,7 +3,8 @@ import firebaseJson from '~/../../firebase.json'
 export default Object.freeze({
   firebase: {
     config: JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG),
-    useEmulator: import.meta.env.VITE_FIREBASE_EMULATOR === 'true',
+    // useEmulator: false,
+    useEmulator: import.meta.env.PROD ? false : import.meta.env.VITE_FIREBASE_EMULATOR === 'true',
     emulatorPort: {
       auth: firebaseJson.emulators.auth.port,
       database: firebaseJson.emulators.database.port,
@@ -12,5 +13,5 @@ export default Object.freeze({
       storage: firebaseJson.emulators.storage.port,
     },
   },
-  supportEmail: 'kadhl@ormnicro.id',
+  supportEmail: 'akhdanzaim53@gmail.com',
 })

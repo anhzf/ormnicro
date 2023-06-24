@@ -29,7 +29,6 @@ const stats = useDevice.compostParameters(device.value.id)
 
       <section class="flex flex-col gap-2 p-4">
         <stats-highlight-card
-          device-label="Perangkat 1"
           :loading="!stats._isReady"
           :session-start-at="stats.startAt"
           :is-device-online="stats.isOnline"

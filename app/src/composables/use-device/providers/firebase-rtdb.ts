@@ -53,10 +53,10 @@ const fromSource = {
 const getDevice: GetDevice = (maybeRefId) => {
   const id = isRef(maybeRefId) ? maybeRefId : ref(maybeRefId)
   const { extended: userData } = useUser()
-  const deviceRef = doc(db(), 'Devices', id.value)
+  const deviceRef = computed(() => doc(db(), 'Devices', id.value))
   const data = useFirestore(deviceRef, null, { autoDispose: false }) as Ref<Device>
   return computed(() => ({
-    id, ...data.value, fromUser: userData.value.savedDevices[id.value],
+    id, ...data.value, fromUser: userData.value?.savedDevices[id.value],
   }))
 }
 
