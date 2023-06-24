@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { useAuth } from '@vueuse/firebase'
+import { signOut } from 'firebase/auth'
 import config from '~/config'
 import { auth } from '~/services/firebase'
 
@@ -86,6 +87,10 @@ const inferActionComponentType = (action: Notification['action']) => {
     return 'a'
   return 'button'
 }
+
+const onSignOutClick = () => {
+  signOut(auth())
+}
 </script>
 
 <template>
@@ -99,7 +104,7 @@ const inferActionComponentType = (action: Notification['action']) => {
             {{ user?.displayName }}
           </div>
           <div class="flex gap-1">
-            <span class="text-green-900 font-semibold">1908</span>
+            <span class="text-green-900 font-semibold">NaN</span>
             <span class="self-end text-xs text-slate-500 font-medium">poin</span>
           </div>
         </div>
@@ -108,9 +113,20 @@ const inferActionComponentType = (action: Notification['action']) => {
       <div class="grow" />
 
       <div class="flex justify-end gap-4">
-        <button class="btn btn--icon btn--flat text-slate-500">
-          <div class="btn__icon i-material-symbols:notifications" />
-        </button>
+        <template v-if="user">
+          <button class="btn btn--icon btn--flat text-slate-500">
+            <div class="btn__icon i-material-symbols:notifications" />
+          </button>
+          <button class="btn btn--icon btn--flat text-slate-500" @click="onSignOutClick">
+            <div class="btn__icon i-material-symbols:logout" />
+          </button>
+        </template>
+
+        <template v-else>
+          <router-link :to="{ name: 'signIn' }" class="btn btn--icon btn--flat text-slate-500">
+            <div class="btn__icon i-material-symbols:login" />
+          </router-link>
+        </template>
       </div>
     </div>
 
