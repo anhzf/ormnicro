@@ -74,8 +74,6 @@ export interface MaggotParameters {
   /** Celsius */
   temperature: number
   nozzleMode: NozzleMode
-  /** 0 - 1 */
-  waterLevel: number
   lumix: number
   _isReady?: boolean
   _hasSession?: boolean

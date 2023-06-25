@@ -35,7 +35,6 @@ interface _MaggotParameters {
   humidity: number
   temperature: number
   lumix: number
-  waterLevel: number
   activeSessionId?: string
 }
 
@@ -180,7 +179,6 @@ const useMaggotParameters: UseMaggotParameters = (maybeRefDeviceId) => {
     temperature: deviceData.value?.temperature,
     nozzleMode: fromSource.nozzleMode(sessData.value?.nozzleMode),
     lumix: deviceData.value?.lumix,
-    waterLevel: deviceData.value?.waterLevel,
     _isReady: !!(sessData.value && deviceData.value),
     _hasSession: !!deviceData.value?.activeSessionId,
   }))

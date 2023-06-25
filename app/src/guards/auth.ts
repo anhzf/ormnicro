@@ -1,16 +1,13 @@
 import { useAuth } from '@vueuse/firebase'
+import { onIdTokenChanged } from 'firebase/auth'
 import type { NavigationGuardWithThis } from 'vue-router'
 import { auth } from '~/services/firebase'
 
 const waitForAuth = () => new Promise<void>((resolve) => {
-  const { isAuthenticated } = useAuth(auth())
-  watchOnce(isAuthenticated, () => {
-    resolve()
-  }, { immediate: true })
+  onIdTokenChanged(auth(), () => resolve())
 })
 
 const authGuard: NavigationGuardWithThis<never> = async (to) => {
-  // await prepareAuth()
   await waitForAuth()
 
   const { isAuthenticated } = useAuth(auth())

@@ -134,7 +134,7 @@ watch(isDeviceAvailable, () => {
           <div class="btn__icon i-material-symbols:arrow-back-ios-new" />
         </router-link>
 
-        <h1 class="text-xl text-$primary-xstrong font-semibold">
+        <h1 class="hidden sm:inline-block text-xl text-$primary-xstrong font-semibold shrink text-ellipsis">
           Monitoring
         </h1>
 
@@ -307,19 +307,19 @@ watch(isDeviceAvailable, () => {
     @apply fixed inset-0 bg-black/50
 
   &__content
-    @apply z-1 flex flex-col gap-6 max-w-[calc(100vw-2rem)] bg-$bw-bg rounded-3xl shadow-2xl p-6 transition-transform,opacity
+    @apply z-1 flex flex-col gap-6 max-w-[calc(100vw-1rem)] bg-$bw-bg rounded-3xl shadow-2xl p-6 transition-transform,opacity duration-350
     #{$root}.v-enter-active &
-      @apply delay-[0,100ms]
+      @apply delay-[0,100ms] ease-out
     #{$root}.v-enter-from &
-      @apply translate-y-1/4 opacity-0
+      @apply translate-y-1/4 opacity-25
     #{$root}.v-enter-to &
       @apply translate-y-0 opacity-100
     #{$root}.v-leave-active &
-      @apply delay-[100ms,0]
+      @apply delay-[100ms,0] ease-in
     #{$root}.v-leave-from &
       @apply translate-y-0 opacity-100
     #{$root}.v-leave-to &
-      @apply translate-y-1/4 opacity-0
+      @apply translate-y-1/4 opacity-25
 
 :deep(.stats)
   @apply flex flex-col gap-4 px-6 py-4
